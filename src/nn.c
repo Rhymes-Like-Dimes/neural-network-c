@@ -11,11 +11,11 @@ Layer* init_layer(int layerID, int size, int prevSize) {
     layer->layerID = layerID;
     layer->size = size;
     layer->prevSize = prevSize;
+    layer->output = (float*)calloc(size, sizeof(float));
 
     if(prevSize > 0) {
         layer->weights = (float**)malloc(sizeof(float*) * size);
         layer->biases = (float*)malloc(sizeof(float) * size);
-        layer->output = (float*)malloc(sizeof(float) * size);
         layer->activation = (float*)calloc(size, sizeof(float));
         layer->delta = (float*)calloc(size, sizeof(float));
 
@@ -25,10 +25,6 @@ Layer* init_layer(int layerID, int size, int prevSize) {
             for(int j=0; j<prevSize; j++) {
                 layer->weights[i][j] = rand_init();
             }
-        }
-        if(!validate_layer(layer)) {
-            fprintf(stderr, "Layer %d memory allocation failed. Exitting...\r\n", layerID);
-            exit(EXIT_FAILURE);
         }
     } else {
         layer->weights = NULL;
