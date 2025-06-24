@@ -11,25 +11,25 @@ Layer* init_layer(int layerID, int size, int prevSize) {
     layer->layerID = layerID;
     layer->size = size;
     layer->prevSize = prevSize;
-    layer->output = (float*)calloc(size, sizeof(float));
 
     if(prevSize > 0) {
-        layer->weights = (float**)malloc(sizeof(float*) * size);
+        layer->weights = (float*)malloc(sizeof(float) * size * prevSize);
         layer->biases = (float*)malloc(sizeof(float) * size);
-        layer->activation = (float*)calloc(size, sizeof(float));
+        layer->activation = (float*)malloc(sizeof(float) * size);
+        layer->output = (float*)malloc(sizeof(float) * size);
         layer->delta = (float*)calloc(size, sizeof(float));
 
         for(int i=0; i<size; i++) {
-            layer->weights[i] = (float*)malloc(sizeof(float) * prevSize);
             layer->biases[i] = rand_init();
             for(int j=0; j<prevSize; j++) {
-                layer->weights[i][j] = rand_init();
+                layer->weights[i * prevSize + j] = rand_init();
             }
         }
     } else {
         layer->weights = NULL;
         layer->biases = NULL;
-        layer->activation = NULL;
+        layer->output = NULL;
+        layer->activation = (float*)malloc(sizeof(float) * size);
         layer->delta = NULL;
     }
     return layer;
@@ -49,6 +49,46 @@ NeuralNetwork* init_nn(int numLayers, int* layerSizes, float learningRate) {
     return nn;
 }
 
-void test(void) {
-    printf("Hello 123\n");
+void print_network(NeuralNetwork* nn) {
+    for (int i = 0; i < nn->numLayers; i++) {
+        Layer* layer = nn->layers[i];
+        printf("Layer: %d\nSize: %d\nPrev Size: %d\n", layer->layerID, layer->size, layer->prevSize);
+
+        if (layer->weights != NULL) {
+            printf("Weights:\n");
+            print_matrix(layer->weights, layer->size, layer->prevSize);
+        }
+        printf("\n");
+    }
 }
+
+
+void feedforward(NeuralNetwork* nn, float* input) {
+
+    //Assign traning input as input layers' activation
+    for(int i=0; i<nn->layers[0]->size; i++) {
+        nn->layers[0]->activation[i] = input[i];
+    }
+
+    //For each layer i after input layer
+    for(int i=1; i<nn->numLayers; i++) {
+        Layer* curr = nn->layers[i];
+        Layer* prev = nn->layers[i-1];
+
+        //For each neuron j in layer i
+        for(int j=0; j<curr->size; j++) {
+
+            //Initialize the output of layer i as the bias
+            curr->output[j] = curr->biases[j];
+
+            //For each neuron k in layer i-1
+            for(int k=0; k<curr->prevSize; k++) {
+                curr->output[j] += curr->weights[j * curr->prevSize + k] * prev->activation[k];
+            }
+
+            //Apply activation
+            curr->activation[j] = sigmoid(curr->output[j]);
+        }
+    }
+}
+
