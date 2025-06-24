@@ -4,20 +4,6 @@
 #include "nn.h"
 #include "utils.h"
 
-int validate_layer(Layer* layer) {
-    int result = 1;
-
-    if (!layer || !layer->weights || !layer->biases || !layer->output || !layer->activation || !layer->delta) {
-        result = 0;
-    }
-
-    for (int i = 0; i < layer->size; i++) {
-        if (layer->weights[i] == NULL) {
-            result = 0;
-        }
-    }
-    return result;
-}
 
 Layer* init_layer(int layerID, int size, int prevSize) {
     Layer* layer = (Layer*)malloc(sizeof(Layer));
