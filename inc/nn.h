@@ -21,5 +21,6 @@ typedef struct {
 
 Layer* init_layer(int layerID, int size, int prevSize);
 NeuralNetwork* init_nn(int numLayers, int* layerSizes, float learningRate);
+void print_network(NeuralNetwork* nn);
 
 #endif

@@ -48,3 +48,7 @@ NeuralNetwork* init_nn(int numLayers, int* layerSizes, float learningRate) {
     }
     return nn;
 }
+
+void test(void) {
+    printf("Hello 123\n");
+}
