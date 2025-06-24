@@ -15,8 +15,8 @@ Layer* init_layer(int layerID, int size, int prevSize) {
     if(prevSize > 0) {
         layer->weights = (float*)malloc(sizeof(float) * size * prevSize);
         layer->biases = (float*)malloc(sizeof(float) * size);
-        layer->activation = (float*)malloc(sizeof(float) * size);
         layer->output = (float*)malloc(sizeof(float) * size);
+        layer->activation = (float*)malloc(sizeof(float) * size);
         layer->delta = (float*)calloc(size, sizeof(float));
 
         for(int i=0; i<size; i++) {
@@ -49,20 +49,6 @@ NeuralNetwork* init_nn(int numLayers, int* layerSizes, float learningRate) {
     return nn;
 }
 
-void print_network(NeuralNetwork* nn) {
-    for (int i = 0; i < nn->numLayers; i++) {
-        Layer* layer = nn->layers[i];
-        printf("Layer: %d\nSize: %d\nPrev Size: %d\n", layer->layerID, layer->size, layer->prevSize);
-
-        if (layer->weights != NULL) {
-            printf("Weights:\n");
-            print_matrix(layer->weights, layer->size, layer->prevSize);
-        }
-        printf("\n");
-    }
-}
-
-
 void feedforward(NeuralNetwork* nn, float* input) {
 
     //Assign traning input as input layers' activation
@@ -86,7 +72,7 @@ void feedforward(NeuralNetwork* nn, float* input) {
                 curr->output[j] += curr->weights[j * curr->prevSize + k] * prev->activation[k];
             }
 
-            //Apply activation
+            //Apply activation for each neuron j in layer i
             curr->activation[j] = sigmoid(curr->output[j]);
         }
     }
