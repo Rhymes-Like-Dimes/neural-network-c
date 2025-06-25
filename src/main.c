@@ -37,14 +37,18 @@ int main() {
     NeuralNetwork* nn = init_nn(NUM_LAYERS, layerSizes, 0.05f);
 
     //Feed forward
+    clock_t start1 = clock();
     feedforward(nn, input);
+    clock_t end1 = clock();
 
     //Backpropagation
-    clock_t start = clock();
+    clock_t start2 = clock();
     backpropagation(nn, target);
-    clock_t end = clock();
+    clock_t end2 = clock();
 
-    double elapsed = (double)(end - start) / CLOCKS_PER_SEC;
+    double elapsed = (double)(end1 - start1) / CLOCKS_PER_SEC;
+    double elapsed = (double)(end2 - start2) / CLOCKS_PER_SEC;
+    printf("Feedforward took %.6f seconds\n", elapsed);
     printf("Backpropagation took %.6f seconds\n", elapsed);
 
     return 0;
