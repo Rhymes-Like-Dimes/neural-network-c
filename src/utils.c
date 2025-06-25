@@ -4,16 +4,20 @@
 #include "nn.h"
 #include "utils.h"
 
-float sigmoid(float output) {
+float sigmoid(float z) {
     float result;
-    if(output > 40.0f) {
+    if(z > 40.0f) {
         result = 1.0f;
-    } else if (output < -40.0f) {
+    } else if (z < -40.0f) {
         result = 0.0f;
     } else {
-        result = 1.0f / (1.0f + expf(-output));
+        result = 1.0f / (1.0f + expf(-z));
     }
     return result;
+}
+
+float dsigmoid_a(float a) {
+    return a * (1.0f - a);
 }
 
 float rand_init() {
@@ -31,28 +35,28 @@ void print_matrix(float* matrix, int rows, int cols) {
 }
 
 /**
- * @brief Prints a single layer of the network
+ * @brief Prints a single layer of the network.
  * 
  * This function prints the layer of the layer pointer handed to it. You can
  * choose which components of each layer you want to print by setting the appropriate
  * flag. 
  * 
- * @param layer The pointer to the layer struct to be printerd
- * @param inputFlag Set to 1 to print the input to the network in vector form
- * @param weightFlag Set to 1 to print the weight matrix
- * @param biasFlag Set to 1 to print the biases in vector form
- * @param outputFlag Set to 1 to print the pre activation outputs in vector form
- * @param activationFlag Set to 1 to print the layer activation in vector form
- * @param deltaFlag Set to 1 to print the layer error terms in vector form
+ * @param layer The pointer to the layer struct to be printerd.
+ * @param inputFlag Set to 1 to print the input to the network in vector form.
+ * @param weightFlag Set to 1 to print the weight matrix.
+ * @param biasFlag Set to 1 to print the biases in vector form.
+ * @param outputFlag Set to 1 to print the pre activation outputs in vector form.
+ * @param activationFlag Set to 1 to print the layer activation in vector form.
+ * @param deltaFlag Set to 1 to print the layer error terms in vector form.
  * 
- * @details Set flag to zero to prevent printing of specific parameter
+ * @details Set flag to zero to prevent printing of specific parameter.
  */
 void print_layer(Layer* layer, int inputFlag, int weightFlag, int biasFlag, int outputFlag, int activationFlag, int deltaFlag) {
     if (layer->prevSize == 0) {
         printf("Layer: %d\nSize: %d\n", layer->layerID, layer->size);
 
         if (inputFlag) {
-            printf("\nInput:\n");
+            printf("Input:\n");
             print_matrix(layer->activation, layer->size, 1);   
         }
     } else {
@@ -78,7 +82,7 @@ void print_layer(Layer* layer, int inputFlag, int weightFlag, int biasFlag, int 
         if (layer->activation != NULL && activationFlag) {
             printf("Activation:\n");
             print_matrix(layer->activation, layer->size, 1);
-            printf("\n");
+            //printf("\n");
         }
 
         if (layer->delta != NULL && deltaFlag) {
@@ -91,21 +95,21 @@ void print_layer(Layer* layer, int inputFlag, int weightFlag, int biasFlag, int 
 }
 
 /**
- * @brief Prints each layer of the network using print_layer()
+ * @brief Prints each layer of the network using 'print_layer()'.
  * 
  * This function prints every layer of the neural network pointer handed to it. You can
  * choose which components of each layer you want to print by setting the appropriate
  * flag. 
  * 
- * @param nn The pointer to the neural network struct to be printerd
- * @param inputFlag Set to 1 to print the input to the network in vector form
- * @param weightFlag Set to 1 to print the weight matrix
- * @param biasFlag Set to 1 to print the biases in vector form
- * @param outputFlag Set to 1 to print the pre activation outputs in vector form
- * @param activationFlag Set to 1 to print the layer activation in vector form
- * @param deltaFlag Set to 1 to print the layer error terms in vector form
+ * @param nn The pointer to the neural network struct to be printerd.
+ * @param inputFlag Set to 1 to print the input to the network in vector form.
+ * @param weightFlag Set to 1 to print the weight matrix.
+ * @param biasFlag Set to 1 to print the biases in vector form.
+ * @param outputFlag Set to 1 to print the pre activation outputs in vector form.
+ * @param activationFlag Set to 1 to print the layer activation in vector form.
+ * @param deltaFlag Set to 1 to print the layer error terms in vector form.
  * 
- * @details Set flag to zero to prevent printing of specific parameter
+ * @details Set flag to zero to prevent printing of specific parameter.
  */
 void print_network(NeuralNetwork* nn, int inputFlag, int weightFlag, int biasFlag, int outputFlag, int activationFlag, int deltaFlag) {
     printf("--------------------------\n");

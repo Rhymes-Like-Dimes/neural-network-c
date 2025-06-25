@@ -1,7 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-float sigmoid(float output);
+float sigmoid(float z);
+float dsigmoid_a(float a);
 float rand_init();
 void print_matrix(float* matrix, int rows, int cols);
 void print_layer(Layer* layer, int inputFlag, int weightFlag, int biasFlag, int outputFlag, int activationFlag, int deltaFlag);
