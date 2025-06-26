@@ -44,8 +44,8 @@ int main() {
     
     //3 hidden layers size 128, 64, 32 
     //learning rate = 0.3, decay rate = 0.9, accuracy = 98.6%
-    //learning rate = 0.5, decay rate = 0.05, accuracy = 98.6%
-    //
+    //learning rate = 0.5, decay rate = 0.95, accuracy = 98.1%
+    //learning rate = 0.2, decay rate = 0.85, accuracy = 98.7%
     int layerSizes[NUM_LAYERS] = {
         INPUT_SIZE,
         128,
