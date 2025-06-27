@@ -91,14 +91,29 @@ NeuralNetwork* init_nn(int numLayers, int* layerSizes, float learningRate) {
 }
 
 /**
+ * @brief Applies exponential decay to the learning rate based on the current epoch.
+ *
+ * Updates the neural network's learning rate according to the formula:
+ * learningRate = base_lr * (decay_rate ^ epoch).
+ *
+ * @param nn         Pointer to the NeuralNetwork whose learning rate will be updated.
+ * @param base_lr    The initial base learning rate.
+ * @param decay_rate The decay factor applied per epoch (typically < 1).
+ * @param epoch      The current training epoch (starting from 0).
+ */
+void decay_lr(NeuralNetwork* nn, float base_lr, float decay_rate, int epoch) {
+     nn->learningRate = base_lr * powf(decay_rate, epoch);
+}
+
+/**
  * @brief Performs the feedforward pass on a neural network given an input.
  * 
  * Computes the output and subsequent activations of each layer from input layer output layer.
  * The input data is first assigned to the input layers' activation vector, which enables the 
  * reuse of the same formula and requires no special handling for the input layer. Then, for
- * each layer, the output for each neuron is parallelly initialized as the bias and the weighted sum of the previous
- * layer activations is accumulated. The activation vector is then computed by applying the sigmoid
- * function to the output. 
+ * each layer, the output for each neuron is parallelly initialized as the bias and the weighted 
+ * sum of the previous layer activations is accumulated. The activation vector is then computed 
+ * by applying the sigmoid function to the output. 
  * 
  * @param nn    The pointer to the neural network struct to apply the feedforward stage.
  * @param input Array of input training data equal in size to the input layer. 
@@ -133,6 +148,16 @@ void feedforward(NeuralNetwork* nn, float* input) {
     }
 }
 
+/**
+ * @brief Updates all parameters in a neural network using their gradient
+ * 
+ * Updates all weights and biases for all layers in a neural network using the gradient 
+ * caluclated during "backpropagation()". Note delta's must be reset to zero after each
+ * backpropagation() call since the weights are accumulated using a += statement rather
+ * than an assigment operation. This function is called at the end of backpropagation().
+ * 
+ * @param nn    Pointer to the neural network to be updated
+ */
 void updateParameters(NeuralNetwork* nn) {
     for(int i=1; i<nn->numLayers; i++) {
         Layer* curr = nn->layers[i];
@@ -147,9 +172,30 @@ void updateParameters(NeuralNetwork* nn) {
             }
         }
     }
-    //Note: No need to reset dweights/dbiases as they are overwritten in back propagation
 }
 
+/**
+ * @brief Calculates the gradient of the loss function with respect to the network 
+ * parameters and updates the weights and biases in order to reduce the loss. 
+ * 
+ * This function peforms the backpropagation algorithm to compute the gradient of the 
+ * loss function with respect to the weights and biases of each layer. The delta (error
+ * term) is calculated for each layer, then backpropagated to the previous layer and
+ * and used to calculate the gradient, from output layer to input layer.
+ * 
+ * The output layer's deltas using the partial derivative of the loss function (mean
+ * squared error) and the activation (sigmoid). Hidden layers compute their deltas based
+ * on the weighted deltas of the layer ahead, followed by gradient computation. The output
+ * layer error & gradient calculation are handled as a special case.
+ * 
+ * Gradient computation is followed by a call to "updateParameters()", which updates the
+ * weights and biases of the neural network using a fraction of the gradient called the
+ * learning rate.
+ * 
+ * Open MP is used to parallelize gradient compututaion to improve time complexity.
+ * 
+ * @param nn    Pointer to the nerual netwrok structure to perform backpropagation on
+ */
 void backpropagation(NeuralNetwork* nn, float* target) {
 
     //For each layer starting from the output layer, except the input layer
