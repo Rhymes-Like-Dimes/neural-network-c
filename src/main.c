@@ -10,6 +10,7 @@
 #define OUTPUT_SIZE 10
 
 //These are customizable. If the number of layers is changed, the layer sizes array must be changed below
+//Also experiment with the learning rate and decay rate
 #define NUM_LAYERS 5
 #define NUM_EPOCHS 5
 
