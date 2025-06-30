@@ -24,8 +24,10 @@ typedef struct {
 Layer* init_layer(int layerID, int size, int prevSize);
 NeuralNetwork* init_nn(int numLayers, int* layerSizes, float learningRate);
 void decay_lr(NeuralNetwork* nn, float base_lr, float decay_rate, int epoch);
-void feedforward(NeuralNetwork* nn, float* input);
 void updateParameters(NeuralNetwork* nn);
-void backpropagation(NeuralNetwork* nn, float* target);
+void feedforward_XNTPY(NeuralNetwork* nn, float* input);
+void backpropagation_XNTPY(NeuralNetwork* nn, float* target);
+void feedforward_MSE(NeuralNetwork* nn, float* input);
+void backpropagation_MSE(NeuralNetwork* nn, float* target);
 
 #endif

@@ -106,11 +106,13 @@ int mnist_next(MnistLoader* loader) {
         return 0;
     }
 
+    //Load next image into input array
     int i = loader->indices[loader->index++];
     for(int j=0; j<loader->image_size; j++) {
         loader->input[j] = loader->images[i * loader->image_size + j];
     }
 
+    //Convert label to one hot encoded array
     for(int j=0; j<10; j++) {
         loader->target[j] = loader->labels[i] == j ? 1.0f : 0.0f;
     }
