@@ -11,12 +11,12 @@
 
 //These are customizable. If the number of layers is changed, the layer sizes array must be changed below
 //Also experiment with the learning rate and decay rate
-#define NUM_LAYERS 4
+#define NUM_LAYERS 6
 #define NUM_EPOCHS 15
 
 /**
  * 784 - 128 - 128 - 10
- * Best Accuracy (Cross entropy): 98.04%
+ * Best Accuracy (Cross entropy): 98.40%
  * NUM_EPOCHS = 15
  * base_lr = 0.01
  * decay_rate = 0.98
@@ -47,6 +47,8 @@ int main() {
     //Layer sizes 
     int layerSizes[NUM_LAYERS] = {
         INPUT_SIZE,
+        128,
+        128,
         128,
         128,
         OUTPUT_SIZE
@@ -127,10 +129,10 @@ int main() {
     fprintf(csv, "# Base Learning Rate: %.5f\n", base_lr);
     fprintf(csv, "# Decay Rate: %.5f\n\n", decay_rate);
 
-    // Write column headers
+    //Write column headers
     fprintf(csv, "Epoch,Accuracy,Loss\n");
 
-    // Write data rows
+    //Write data rows
     for (int i = 0; i < NUM_EPOCHS; i++) {
         fprintf(csv, "%d,%.4f,%.6f\n", i + 1, accuracy[i], loss[i]);
     }

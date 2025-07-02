@@ -41,7 +41,7 @@ Layer* init_layer(int layerID, int size, int prevSize) {
         layer->dweights = (float*)malloc(sizeof(float) * size * prevSize);
         layer->dbiases = (float*)malloc(sizeof(float) * size);
 
-        //Initialize weights as random numbers between -1 and 1
+        //Initialize weights as random numbers from normal distribution
         for(int i=0; i<size; i++) {
             layer->biases[i] = 0.0f;
             for(int j=0; j<prevSize; j++) {
