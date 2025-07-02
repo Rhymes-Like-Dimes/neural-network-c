@@ -6,10 +6,25 @@ This project is a neural network written from scratch in C to recognize handwrit
 This project is comprised of several different files, each serving a specific purpose. Note that most C files have a corresponding header file, where relevant functions and structs are defined. The main training loop and subsequent test loop is contained in 'main.c'. This also includes output file handling for recording loss and accuracy data per epoch, which will be discuessed later. The core functionality of the neural network is implemented in 'nn.c', which contains functions for the feedforward pass and the backpropagation pass, among others. 'nn.h' defines the necessary structs for creating the network, and the function definitions for 'nn.c'. 'utils.c' and its corresponding 'utils.h' is a collection of helper functions including functions for priting matrices, computing various activation functions and their derivatives (sigmoid, reLU, softmax) and various other necessary functions. 'mnist.c' and 'mnist.h' define structures and functions for loading the MNIST image data into the neural network, and also provides supporting functions such as a image shuffling function to prevent the same order of images from being passed through each epoch.
 
 ## Network Structure
-This project has been created such that the number of hidden layers and size of each individual hidden layer can be defined by the user, trained and tested. Other parameters such as the learning rate and decay rate can also be adjusted by the user, as will be discussed later. The most basic unit of the neural network is the layer. For this, a struct, Layer, in 'nn.h' was created containing the layer information, and all the vectors required to perform the forward pass and backpropagation pass. This inlcudes:
+This neural network has two implementations. One using mean squared error and sigmoid activation, and the other using categorical cross entropy loss and reLU & softmax activation. As the implementation using cross entropy loss generally performs better, this is the current architecture used. Note that it is relatively simple to switch between the two methods, only involving swapping some function calls from the XNTPY version to the MSE version or vice versa, and changing a line of the 'init_layer' function (TBD).
+
+This project has been created such that the number of hidden layers and size of each individual hidden layer can be defined by the user. Other parameters such as the learning rate and decay rate can also be adjusted by the user, as will be discussed later. The most basic unit of the neural network is the layer. For this, a struct, Layer, in 'nn.h' was created with the layer information and vectors required to perform the forward pass and backpropagation pass. This inlcudes:
 - Layer ID
 - Number of neurons in the layer (size)
 - Number of neurons in the previous layer (prevSize)
+- Weights [size x prevSize]
+- Biases [size x 1]
+- Ouput [size x 1]
+- Activation [size x 1]
+- Delta [size x 1]
+- Partial derivative of loss with respect to weights of this layer [size x prevSize]
+- Partial derivative of loss with respect to biases of this layer [size x 1] 
+The 'init_layer' function allocates memory for these layer parameters usually using malloc. There are two things of note with the layer initialization: 
+1. Input Layer 
+The input layer is detected by checking if the previous layer size is 0. Hence the input layer must always have a previous layer size of 0. The input layer has all layer parameters except for layer ID, size, prevSize and activation set as NULL. Although technically no activation is applied to the input layer, the input data is assigned to the activation array of the input layer as this allows for a simplification of the code during forward propagation. In short, it allows us to use the same equation to calculate the output of any layer, rather than needing a special case in order to handle the input layer.
+2. 
+
+
 
 
 The pre-activation value is given by $z = \sum_{i=1}^{n} w_i x_i + b$.
