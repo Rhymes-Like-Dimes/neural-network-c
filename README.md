@@ -18,7 +18,8 @@ This project has been created such that the number of hidden layers and size of 
 - Activation [size x 1]
 - Delta [size x 1]
 - Partial derivative of loss with respect to weights of this layer [size x prevSize]
-- Partial derivative of loss with respect to biases of this layer [size x 1] 
+- Partial derivative of loss with respect to biases of this layer [size x 1]
+ 
 The 'init_layer' function allocates memory for these layer parameters usually using malloc. There are four things of note with the layer initialization: 
 1. **Input Layer:** The input layer is detected by checking if the previous layer size is 0. Hence the input layer must always have a previous layer size of 0. The input layer has all layer parameters except for layer ID, size, prevSize and activation set as NULL. Although technically no activation is applied to the input layer, the input data is assigned to the activation array of the input layer as this allows for a simplification of the code during forward propagation. In short, it allows us to use the same equation to calculate the output of any layer, rather than needing a special case in order to handle the input layer.
 2. **Parameter Initialization:** The MSE and XNTPY versions require separate weight initializations. While the biases for both cases can be initialized as zero, the weights are initalized as a random number on [-1, 1] for MSE, and a random number on [0, 1] from a gaussian distribution for XNTPY.
