@@ -8,6 +8,7 @@ This project is comprised of several different files, each serving a specific pu
 ## Network Structure
 This neural network has two implementations. One using mean squared error (MSE) and sigmoid activation, and the other using categorical cross entropy  (XNTPY) loss and reLU & softmax activation. As the implementation using cross entropy loss generally performs better, this is the current architecture used. Note that it is relatively simple to switch between the two methods, only involving swapping some function calls from the XNTPY version to the MSE version or vice versa, and changing a line of the 'init_layer' function (TBD).
 
+### Layers
 This project has been created such that the number of hidden layers and size of each individual hidden layer can be defined by the user. Other parameters such as the learning rate and decay rate can also be adjusted by the user, as will be discussed later. The most basic unit of the neural network is the layer. For this, a struct, Layer, in 'nn.h' was created with the layer information and vectors required to perform the forward pass and backpropagation pass. This inlcudes:
 - Layer ID
 - Number of neurons in the layer (size)
@@ -19,15 +20,15 @@ This project has been created such that the number of hidden layers and size of 
 - Delta [size x 1]
 - Partial derivative of loss with respect to weights of this layer [size x prevSize]
 - Partial derivative of loss with respect to biases of this layer [size x 1]
- 
-The 'init_layer' function allocates memory for these layer parameters usually using malloc. There are four things of note with the layer initialization: 
+
+The 'init_layer' function allocates memory for these layer parameters usually using malloc and returns a pointer to the layer. There are four things of note with the layer initialization: 
 1. **Input Layer:** The input layer is detected by checking if the previous layer size is 0. Hence the input layer must always have a previous layer size of 0. The input layer has all layer parameters except for layer ID, size, prevSize and activation set as NULL. Although technically no activation is applied to the input layer, the input data is assigned to the activation array of the input layer as this allows for a simplification of the code during forward propagation. In short, it allows us to use the same equation to calculate the output of any layer, rather than needing a special case in order to handle the input layer.
 2. **Parameter Initialization:** The MSE and XNTPY versions require separate weight initializations. While the biases for both cases can be initialized as zero, the weights are initalized as a random number on [-1, 1] for MSE, and a random number on [0, 1] from a gaussian distribution for XNTPY.
 3. **Memory Allocation:** Note that for most arrays, malloc is used to allocate memory. However, calloc is neccessarily used for the delta array, as it needs to be zero'd out before being accumulated (with  +=) during backpropagation to prevent faulty starting data. All other arrays are use assignment operations (=) to have values assigned to the array. 
 4. **Cache Locality:** As neural networks and training are computationally intensive tasks, care has been taken to optimize this model a reasonable amount. Namely, instead of using 2D arrays, the 2D arrays are 'flattened' to 1D and indexed using the equivalent: array[i][j] = array[i * cols + j]. Storing a 2D structure as a flattened 1D array improves cache performance due to better spatial locality. In a traditional 2D array, accessing elements row by row may result in cache misses when transitioning between rows, especially if the memory layout isn't contiguous or predictable. With a 1D array, elements are laid out in a single, continuous block of memory. This means that when accessing elements sequentially (even across "rows"), the CPU is more likely to find the next value already loaded in the cache. As a result, cache hits increase, and memory access becomes faster.
 
+### Network
+Using the Layer structure, we can create a neuralNetwork structure. The neuralNetwork structure contains the number of layers in the network, an array of pointers to each layer, and the learning rate. To initialize a neuralNetwork, we call 'init_nn' and pass it the number of layers (numLayers), an array containing the layer sizes (layerSizes) and the learning rate. By modifying the layerSizes array and the defined NUM_LAYERS, you can change the number of layers in the network and the size of each layer. Ensure that if additional layers are inserted in the layerSizes array, NUM_LAYERS is update to match the length of the array (i.e the number of layers). The 'init_nn' function allocates memory for a neuralNetwork structure and fills the layer pointer array by looping from 1 to numLayers, calling 'init_layer' with increasing layer ID's. Note that the input layer is handled before the for loop as a special case, as the input layer always has a previous layer size of zero assigned to it. Finally, 'init_nn' returns a pointer to the neuralNetwork structure. 
 
 
-
-The pre-activation value is given by $z = \sum_{i=1}^{n} w_i x_i + b$.
 
