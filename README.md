@@ -29,7 +29,7 @@ The 'init_layer' function allocates memory for these layer parameters usually us
 1. **Input Layer:** The input layer is detected by checking if the previous layer size is 0. Hence the input layer must always have a previous layer size of 0. The input layer has all layer parameters except for layer ID, size, prevSize and activation set to NULL. Although technically no activation is applied to the input layer, the input data is assigned to the activation array of the input layer as this allows for a simplification of the code during forward propagation. Since the general equation for the pre-activation neuron output is: 
 
 $$
-z = \sum_{i=1}^{n} w_i a_i + b
+z_j^{(l)} = \sum_{i=1}^{n^{(l-1)}} w_{ji}^{(l)} a_i^{(l-1)} + b_j^{(l)}
 $$
 
 it allows us to use the same equation to calculate the output of any layer, rather than creating a special case in order to handle the input layer.
