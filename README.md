@@ -27,9 +27,11 @@ This project has been created such that the number of hidden layers and size of 
 
 The 'init_layer' function allocates memory for these layer parameters usually using malloc and returns a pointer to the layer. There are four things of note with the layer initialization: 
 1. **Input Layer:** The input layer is detected by checking if the previous layer size is 0. Hence the input layer must always have a previous layer size of 0. The input layer has all layer parameters except for layer ID, size, prevSize and activation set to NULL. Although technically no activation is applied to the input layer, the input data is assigned to the activation array of the input layer as this allows for a simplification of the code during forward propagation. Since the general equation for the pre-activation neuron output is: 
+
 $$
 z = \sum_{i=1}^{n} w_i a_i + b
 $$
+
 it allows us to use the same equation to calculate the output of any layer, rather than creating a special case in order to handle the input layer.
 2. **Parameter Initialization:** The MSE and XNTPY versions require separate weight initializations. While the biases for both cases can be initialized as zero, the weights are initalized as a random number on [-1, 1] for MSE, and a random number on [0, 1] from a gaussian distribution for XNTPY.
 3. **Memory Allocation:** Note that for most arrays, malloc is used to allocate memory. However, calloc is neccessarily used for the delta array, as it needs to be zero'd out before being accumulated (with  +=) during backpropagation to prevent faulty starting data. All other arrays are use assignment operations (=) to have values assigned to the array. 
