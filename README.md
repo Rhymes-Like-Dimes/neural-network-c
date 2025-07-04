@@ -32,7 +32,7 @@ $$
 z_j^{(l)} = \sum_{i=1}^{n^{(l-1)}} w_{ji}^{(l)} a_i^{(l-1)} + b_j^{(l)}
 $$
 
-Instead of assigned the input image data to the input layer's output vector, we assign it to the activation thus allowing us to use the same equation to calculate the output of any layer, rather than creating a special case in order to handle the input layer.
+    Instead of assigned the input image data to the input layer's output vector, we assign it to the activation thus allowing us to use the same equation to calculate the output of any layer, rather than creating a special case in order to handle the input layer.
 
 2. **Parameter Initialization:** The MSE and XNTPY versions require separate weight initializations. While the biases for both cases can be initialized as zero, the weights are initalized as a random number on [-1, 1] for MSE, and a random number on [0, 1] from a gaussian distribution for XNTPY.
 
