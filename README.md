@@ -32,9 +32,12 @@ $$
 z_j^{(l)} = \sum_{i=1}^{n^{(l-1)}} w_{ji}^{(l)} a_i^{(l-1)} + b_j^{(l)}
 $$
 
-it allows us to use the same equation to calculate the output of any layer, rather than creating a special case in order to handle the input layer.
+Instead of assigned the input image data to the input layer's output vector, we assign it to the activation thus allowing us to use the same equation to calculate the output of any layer, rather than creating a special case in order to handle the input layer.
+
 2. **Parameter Initialization:** The MSE and XNTPY versions require separate weight initializations. While the biases for both cases can be initialized as zero, the weights are initalized as a random number on [-1, 1] for MSE, and a random number on [0, 1] from a gaussian distribution for XNTPY.
-3. **Memory Allocation:** Note that for most arrays, malloc is used to allocate memory. However, calloc is neccessarily used for the delta array, as it needs to be zero'd out before being accumulated (with  +=) during backpropagation to prevent faulty starting data. All other arrays are use assignment operations (=) to have values assigned to the array. 
+
+3. **Memory Allocation:** Note that for most arrays, malloc is used to allocate memory. However, calloc is neccessarily used for the delta array, as it needs to be zero'd out before being accumulated (with  +=) during backpropagation to prevent faulty starting data. All other arrays are use assignment operations (=) to have values assigned to the array.
+
 4. **Cache Locality:** As neural networks and training are computationally intensive tasks, care has been taken to optimize this model a reasonable amount. Namely, instead of using 2D arrays, the 2D arrays are 'flattened' to 1D and indexed using the equivalent: array[i][j] = array[i * cols + j]. Storing a 2D structure as a flattened 1D array improves cache performance due to better spatial locality. In a traditional 2D array, accessing elements row by row may result in cache misses when transitioning between rows, especially if the memory layout isn't contiguous or predictable. With a 1D array, elements are laid out in a single, continuous block of memory. This means that when accessing elements sequentially (even across "rows"), the CPU is more likely to find the next value already loaded in the cache. As a result, cache hits increase, and memory access becomes faster.
 
 ### Network
@@ -44,5 +47,4 @@ Using the Layer structure, we can create a neuralNetwork structure. The neuralNe
 - Learning rate (To be discussed later) 
 
 To initialize a neuralNetwork, we call 'init_nn' and pass it the number of layers (numLayers), an array containing the layer sizes (layerSizes) and the learning rate. By modifying the layerSizes array and the defined NUM_LAYERS, you can change the number of layers in the network and the size of each layer. Ensure that if additional layers are inserted in the layerSizes array, NUM_LAYERS is update to match the length of the array (i.e the number of layers). The 'init_nn' function allocates memory for a neuralNetwork structure and fills the array of layer pointers by looping from 1 to numLayers, calling 'init_layer' with increasing layer ID's. Note that the for loop begins at one as the input layer is initalized before the loop as a special case (since it requires an previous size of 0). Lastly, 'init_nn' returns a pointer to the neuralNetwork structure. 
-
 
